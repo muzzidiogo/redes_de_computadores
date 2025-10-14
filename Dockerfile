@@ -22,6 +22,11 @@ WORKDIR /root
 RUN git clone https://gitlab.com/nsnam/ns-3-dev.git ns-3.36.1 && \
     cd ns-3.36.1 && git checkout ns-3.36.1
 
+WORKDIR /root/ns-3.36.1
+
+RUN ./ns3 configure --enable-examples --enable-tests && \
+    ./ns3 build
+   
 # Default shell
 CMD ["/bin/bash"]
 
