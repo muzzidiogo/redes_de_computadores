@@ -1,0 +1,17 @@
+TcpCubic:
+Flow Monitor Results (TcpCubic) - Goodput
+======================================================
+Flow ID 1 (10.1.1.1 -> 10.3.3.2, Port 50000): 0.47812 Mbps (Goodput)
+Flow ID 2 (10.3.3.2 -> 10.1.1.1, Port 49153): 0.0252211 Mbps (Goodput)
+
+Total Aggregate Goodput: 0.503341 Mbps
+
+---
+
+TcpReno:
+Flow Monitor Results (TcpNewReno) - Goodput
+======================================================
+Flow ID 1 (10.1.1.1 -> 10.3.3.2, Port 50000): 0.28996 Mbps (Goodput)
+Flow ID 2 (10.3.3.2 -> 10.1.1.1, Port 49153): 0.0147857 Mbps (Goodput)
+
+Total Aggregate Goodput: 0.304746 Mbps
