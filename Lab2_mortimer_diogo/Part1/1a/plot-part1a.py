@@ -16,15 +16,15 @@ def load_data(filename, label):
     print(f"Successfully loaded data from {filename}. Rows: {len(df)}")
     return df
 
-def plot_comparison(df_cubic, df_reno):
+def plot_comparison(df1:pd.DataFrame, df2:pd.DataFrame)-> None:
     """Generates and saves the comparison plot."""
     
     plt.figure(figsize=(12, 6))
     
-    plt.plot(df_cubic['Time (s)'], df_cubic['Congestion Window (segments)'], 
+    plt.plot(df1['Time (s)'], df1['Congestion Window (segments)'], 
              label='TCP CUBIC', color='blue', linewidth=1.5)
              
-    plt.plot(df_reno['Time (s)'], df_reno['Congestion Window (segments)'], 
+    plt.plot(df2['Time (s)'], df2['Congestion Window (segments)'], 
              label='TCP NewReno', color='red', linestyle='--', linewidth=1)
     
     plt.title('TCP Congestion Window Comparison (10 Mbps, 100 ms Delay, 1 Flow)', fontsize=14)
@@ -38,14 +38,9 @@ def plot_comparison(df_cubic, df_reno):
     print(f"\nPlot successfully saved to: {OUTPUT_PLOT_FILE}")
 
 def main():
-    """Main function to run the script."""
     df_cubic = load_data(CUBIC_FILE, 'TCP CUBIC')
     df_reno = load_data(RENO_FILE, 'TCP NewReno')
-
-    if df_cubic is not None and df_reno is not None:
-        plot_comparison(df_cubic, df_reno)
-    else:
-        print("Please ensure both CUBIC and NewReno trace files are present and correctly named.")
+    plot_comparison(df_cubic, df_reno)
 
 if __name__ == "__main__":
     main()
