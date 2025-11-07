@@ -51,14 +51,12 @@
 #include "ns3/flow-monitor-helper.h"
 #include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/traffic-control-module.h"
-// New required include for flow monitor in recent ns-3 versions
 #include "ns3/ipv4-flow-classifier.h"
 
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("TcpBottleneckComparison");
 
-// Maps key by FLOW INDEX
 static std::map<uint32_t, bool> firstCwnd;
 static std::map<uint32_t, Ptr<OutputStreamWrapper>> cWndStream;
 static std::map<uint32_t, uint32_t> cWndValue;
@@ -116,7 +114,6 @@ TraceCwnd (std::string cwnd_tr_file_name, uint32_t nodeId, uint32_t socketIndex)
   Config::Connect (path.str (), MakeCallback (&CwndTracer));
 }
 
-// Global constants
 const double SIMULATION_DURATION = 20.0;
 const double FLOW_START_TIME = 1.0;
 const double SINK_START_TIME = 0.0;
@@ -234,7 +231,6 @@ int main (int argc, char *argv[])
   sourceApps.Start (Seconds (FLOW_START_TIME));
   sourceApps.Stop (Seconds (SIMULATION_DURATION - 1));
 
-  // --- FIX APPLIED HERE: Schedule TraceCwnd slightly after FLOW_START_TIME ---
   double traceStartTime = FLOW_START_TIME + 0.00001; 
   for (uint32_t i = 0; i < nFlows; ++i)
     {
@@ -243,10 +239,8 @@ int main (int argc, char *argv[])
 
       std::string cwndFileName = "cwnd-trace-" + flowIdStr.str() + ".csv";
       
-      // The original script called TraceCwnd directly. Now we schedule it.
       Simulator::Schedule (Seconds (traceStartTime), &TraceCwnd, cwndFileName, 0, i);
     }
-  // --- END FIX ---
 
 
   Ptr<FlowMonitor> flowMonitor;
@@ -261,22 +255,18 @@ int main (int argc, char *argv[])
   std::cout << "Flow Monitor Results (" << transport_prot << ") - Goodput\n";
   std::cout << "======================================================\n";
 
-  // 1. Get the Flow Stats Container
   Ptr<Ipv4FlowClassifier> classifier = DynamicCast<Ipv4FlowClassifier> (flowHelper.GetClassifier ());
-  // Change GetStats() to GetFlowStats() to match the user's specific ns-3 environment
   std::map<FlowId, FlowMonitor::FlowStats> stats = flowMonitor->GetFlowStats ();
 
   double totalGoodput = 0.0;
   
   for (auto const& iter : stats)
     {
-      // 2. Use GetFlowClassifier to retrieve the 5-tuple
       Ipv4FlowClassifier::FiveTuple t = classifier->FindFlow (iter.first);
       
       double goodput = (double)iter.second.rxBytes * 8 / (SIMULATION_DURATION - FLOW_START_TIME) / 1000000.0;
       totalGoodput += goodput;
 
-      // 3. Print the flow details
       std::cout << "Flow ID " << iter.first << " (" << t.sourceAddress << " -> " << t.destinationAddress 
                 << ", Port " << t.destinationPort << "): "
                 << goodput << " Mbps (Goodput)\n";

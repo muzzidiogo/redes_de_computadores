@@ -1,17 +1,3 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/*
- * ns-3 simulation script for Part 2: RTT Fairness Comparison (CUBIC vs NewReno)
- *
- * Topology: 
- * N1 (Source) -- [100Mbps, 0.01ms] -- N2 -- [Bottleneck] -- N3 
- * |
- * / \
- * /   \
- * /     \
- * [100Mbps, 0.01ms] -> N4 (Dest 1: Short RTT)   [100Mbps, 50ms] -> N5 (Dest 2: Long RTT)
- *
- */
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -95,7 +81,7 @@ TraceCwnd (std::string cwnd_tr_file_name, uint32_t nodeId, uint32_t socketIndex)
 
 int main (int argc, char *argv[])
 {
-  // --- 1. Command Line Arguments and Defaults ---
+  // 1. Command Line Arguments and Defaults
   std::string transport_prot = "TcpCubic";
   std::string bottleneck_data_rate = "1Mbps";
   std::string bottleneck_delay = "20ms";
@@ -134,7 +120,7 @@ int main (int argc, char *argv[])
   Config::SetDefault ("ns3::TcpSocket::RcvBufSize", UintegerValue (1 << 21));
   Config::SetDefault ("ns3::TcpSocket::SndBufSize", UintegerValue (1 << 21));
 
-  // --- 2. Topology Creation (5 Nodes) ---
+  //  2. Topology Creation (5 Nodes) 
   NodeContainer nodes;
   nodes.Create (5); 
   Ptr<Node> n1 = nodes.Get (0);
@@ -167,7 +153,7 @@ int main (int argc, char *argv[])
   InternetStackHelper stack;
   stack.Install (nodes);
 
-  // --- 3. IP Addressing and Routing (3 Networks) ---
+  //  3. IP Addressing and Routing (3 Networks) 
   Ipv4AddressHelper address;
   
   address.SetBase ("10.1.1.0", "255.255.255.0");
@@ -187,7 +173,7 @@ int main (int argc, char *argv[])
   
   Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
   
-  // --- 4. Application Setup (Heterogeneous Flows) ---
+  //  4. Application Setup (Heterogeneous Flows) 
   uint16_t port = 50000;
   uint32_t numDest1Flows = nFlows / 2;
   uint32_t numDest2Flows = nFlows / 2;
@@ -234,7 +220,7 @@ int main (int argc, char *argv[])
   sourceApps.Start (Seconds (FLOW_START_TIME));
   sourceApps.Stop (Seconds (SIMULATION_DURATION - 1));
 
-  // --- 5. Tracing and Flow Monitor ---
+  //  5. Tracing and Flow Monitor 
   double traceStartTime = FLOW_START_TIME + 0.00001; 
   for (uint32_t i = 0; i < nFlows; ++i)
     {
@@ -248,7 +234,7 @@ int main (int argc, char *argv[])
   FlowMonitorHelper flowHelper;
   flowMonitor = flowHelper.InstallAll ();
 
-  // --- 6. Execution and Data Extraction ---
+  //  6. Execution and Data Extraction 
   Simulator::Stop (Seconds (SIMULATION_DURATION));
   Simulator::Run ();
 
@@ -275,13 +261,12 @@ int main (int argc, char *argv[])
   double avgDest1Goodput = dest1Goodput / numDest1Flows;
   double avgDest2Goodput = dest2Goodput / numDest2Flows;
 
-  std::cout << "--- RTT Fairness Results ---\n";
+  std::cout << " RTT Fairness Results \n";
   std::cout << "Protocol: " << transport_prot << "\n";
   std::cout << "NFlows: " << nFlows << "\n";
   std::cout << "RunIndex: " << runIndex << "\n";
   std::cout << "Average Goodput (Dest 1 - Short RTT): " << avgDest1Goodput << " Mbps\n";
   std::cout << "Average Goodput (Dest 2 - Long RTT): " << avgDest2Goodput << " Mbps\n";
-  std::cout << "----------------------------\n";
 
   Simulator::Destroy ();
   return 0;
